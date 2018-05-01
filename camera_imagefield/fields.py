@@ -22,6 +22,9 @@ class CameraImageField(forms.ImageField):
             self.min_aspect_ratio = kwargs.pop('min_aspect_ratio', None)
             self.max_aspect_ratio = kwargs.pop('max_aspect_ratio', None)
 
+        if 'default_field_name' in kwargs:
+            self.default_field_name = kwargs.pop('default_field_name', None)
+
         self.max_size = kwargs.pop('max_size', None)
         self.prefer_jpeg = kwargs.pop('prefer_jpeg', False)
 
@@ -29,6 +32,9 @@ class CameraImageField(forms.ImageField):
 
     def to_python(self, data):
         file = super(CameraImageField, self).to_python(data)
+
+        if not hasattr(file, 'field_name'):
+            file.field_name = self.default_field_name
 
         image = Image.open(file)
         image_format = 'jpeg' if self.prefer_jpeg else image.format
